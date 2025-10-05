@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { 
   CssBaseline, AppBar, Toolbar, Typography, Container, Tab, Tabs, Box, 
-  Button, Chip, IconButton, Avatar, Menu, MenuItem, Alert
+  Button, Chip, IconButton, Avatar, Menu, MenuItem, Alert, Card
 } from '@mui/material';
 import { AccountCircle, Logout, Wallet, Code, Work, Search, Dashboard } from '@mui/icons-material';
 import { ethers } from 'ethers';
