@@ -14,26 +14,27 @@ import JobMatching from './components/JobMatching';
 
 const theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: '#00e5ff',
+      main: '#1976d2',
     },
     secondary: {
-      main: '#ff6d00',
+      main: '#f57c00',
     },
     background: {
-      default: '#0a0a0a',
-      paper: '#1a1a1a',
+      default: '#f8fafc',
+      paper: '#ffffff',
     },
     text: {
-      primary: '#ffffff',
-      secondary: '#b0b0b0',
+      primary: '#1a202c',
+      secondary: '#64748b',
     },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
       fontWeight: 700,
+      color: '#1a202c',
     },
     h6: {
       fontWeight: 600,
@@ -43,9 +44,10 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
           backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(0, 229, 255, 0.2)',
+          borderBottom: '1px solid rgba(25, 118, 210, 0.2)',
+          color: '#1a202c',
         },
       },
     },
@@ -55,6 +57,15 @@ const theme = createTheme({
           textTransform: 'none',
           fontWeight: 600,
           fontSize: '0.95rem',
+          color: '#64748b',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+          borderRadius: 12,
         },
       },
     },
@@ -81,10 +92,13 @@ function TabPanel({ children, value, index, ...other }: TabPanelProps) {
   );
 }
 
+type UserRole = 'developer' | 'employer' | null;
+
 function App() {
   const [account, setAccount] = useState<string>('');
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const [tabValue, setTabValue] = useState<number>(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [connecting, setConnecting] = useState<boolean>(false);
@@ -116,7 +130,18 @@ function App() {
     setAccount('');
     setProvider(null);
     setSigner(null);
+    setUserRole(null);
+    setTabValue(0);
     setAnchorEl(null);
+  };
+
+  const selectRole = (role: UserRole) => {
+    setUserRole(role);
+    if (role === 'developer') {
+      setTabValue(0); // Developer Dashboard
+    } else if (role === 'employer') {
+      setTabValue(1); // Employer Dashboard
+    }
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -223,57 +248,168 @@ function App() {
         </Container>
       )}
 
-      {isConnected && (
+      {isConnected && !userRole && (
+        <Container maxWidth="md" sx={{ mt: 8, textAlign: 'center' }}>
+          <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
+            Choose Your Role
+          </Typography>
+          <Typography variant="h6" color="text.secondary" paragraph sx={{ mb: 6 }}>
+            Are you looking to showcase your skills or hire talented developers?
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Card 
+              sx={{ 
+                p: 4, 
+                minWidth: 280, 
+                cursor: 'pointer',
+                border: '2px solid transparent',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(25, 118, 210, 0.15)',
+                }
+              }}
+              onClick={() => selectRole('developer')}
+            >
+              <Box sx={{ textAlign: 'center' }}>
+                <Code sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                  I'm a Developer
+                </Typography>
+                <Typography color="text.secondary" paragraph>
+                  Submit code, get evaluated, and find job opportunities
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  size="large"
+                  sx={{ mt: 2, borderRadius: 2, textTransform: 'none' }}
+                >
+                  Start Coding
+                </Button>
+              </Box>
+            </Card>
+
+            <Card 
+              sx={{ 
+                p: 4, 
+                minWidth: 280, 
+                cursor: 'pointer',
+                border: '2px solid transparent',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: 'secondary.main',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(245, 124, 0, 0.15)',
+                }
+              }}
+              onClick={() => selectRole('employer')}
+            >
+              <Box sx={{ textAlign: 'center' }}>
+                <Work sx={{ fontSize: 48, color: 'secondary.main', mb: 2 }} />
+                <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                  I'm an Employer
+                </Typography>
+                <Typography color="text.secondary" paragraph>
+                  Post jobs and find qualified developers privately
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  color="secondary"
+                  size="large"
+                  sx={{ mt: 2, borderRadius: 2, textTransform: 'none' }}
+                >
+                  Hire Talent
+                </Button>
+              </Box>
+            </Card>
+          </Box>
+        </Container>
+      )}
+
+      {isConnected && userRole && (
         <Container maxWidth="xl" sx={{ mt: 3 }}>
-          <Tabs 
-            value={tabValue} 
-            onChange={handleTabChange} 
-            centered
-            sx={{ 
-              mb: 3,
-              '& .MuiTabs-indicator': {
-                height: 3,
-                borderRadius: 1.5,
-              }
-            }}
-          >
-            <Tab 
-              icon={<Dashboard />} 
-              label="Developer" 
-              sx={{ minHeight: 72 }}
-            />
-            <Tab 
-              icon={<Work />} 
-              label="Employer" 
-              sx={{ minHeight: 72 }}
-            />
-            <Tab 
-              icon={<Code />} 
-              label="Submit Code" 
-              sx={{ minHeight: 72 }}
-            />
-            <Tab 
-              icon={<Search />} 
-              label="Find Jobs" 
-              sx={{ minHeight: 72 }}
-            />
-          </Tabs>
+          {userRole === 'developer' && (
+            <>
+              <Tabs 
+                value={tabValue} 
+                onChange={handleTabChange} 
+                centered
+                sx={{ 
+                  mb: 3,
+                  '& .MuiTabs-indicator': {
+                    height: 3,
+                    borderRadius: 1.5,
+                  }
+                }}
+              >
+                <Tab 
+                  icon={<Dashboard />} 
+                  label="Dashboard" 
+                  sx={{ minHeight: 72 }}
+                />
+                <Tab 
+                  icon={<Code />} 
+                  label="Submit Code" 
+                  sx={{ minHeight: 72 }}
+                />
+                <Tab 
+                  icon={<Search />} 
+                  label="Find Jobs" 
+                  sx={{ minHeight: 72 }}
+                />
+              </Tabs>
 
-          <TabPanel value={tabValue} index={0}>
-            <DeveloperDashboard account={account} signer={signer} />
-          </TabPanel>
+              <TabPanel value={tabValue} index={0}>
+                <DeveloperDashboard account={account} signer={signer} />
+              </TabPanel>
 
-          <TabPanel value={tabValue} index={1}>
-            <EmployerDashboard account={account} signer={signer} />
-          </TabPanel>
+              <TabPanel value={tabValue} index={1}>
+                <CodeSubmission account={account} signer={signer} />
+              </TabPanel>
 
-          <TabPanel value={tabValue} index={2}>
-            <CodeSubmission account={account} signer={signer} />
-          </TabPanel>
+              <TabPanel value={tabValue} index={2}>
+                <JobMatching account={account} signer={signer} />
+              </TabPanel>
+            </>
+          )}
 
-          <TabPanel value={tabValue} index={3}>
-            <JobMatching account={account} signer={signer} />
-          </TabPanel>
+          {userRole === 'employer' && (
+            <>
+              <Tabs 
+                value={tabValue} 
+                onChange={handleTabChange} 
+                centered
+                sx={{ 
+                  mb: 3,
+                  '& .MuiTabs-indicator': {
+                    height: 3,
+                    borderRadius: 1.5,
+                  }
+                }}
+              >
+                <Tab 
+                  icon={<Work />} 
+                  label="Dashboard" 
+                  sx={{ minHeight: 72 }}
+                />
+                <Tab 
+                  icon={<Search />} 
+                  label="Find Developers" 
+                  sx={{ minHeight: 72 }}
+                />
+              </Tabs>
+
+              <TabPanel value={tabValue} index={0}>
+                <EmployerDashboard account={account} signer={signer} />
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={1}>
+                <JobMatching account={account} signer={signer} />
+              </TabPanel>
+            </>
+          )}
         </Container>
       )}
     </ThemeProvider>
