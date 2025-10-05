@@ -52,6 +52,12 @@ export interface JobMatch {
   id: number;
   title: string;
   company: string;
+  industry: string;
+  companySize: string;
+  fundingStage: string;
+  techStack: string[];
+  culture: string[];
+  verified: boolean;
   matchScore: number;
   salaryRange: string;
   requirements: string;

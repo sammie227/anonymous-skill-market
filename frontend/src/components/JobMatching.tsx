@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Card, CardContent, Typography, Button, Box,
   Chip, Grid, Paper, Alert, CircularProgress,
-  Dialog, DialogTitle, DialogContent, DialogActions
+  Dialog, DialogTitle, DialogContent, DialogActions, Tooltip
 } from '@mui/material';
-import { WorkOutline, TrendingUp, Security, Code } from '@mui/icons-material';
+import { WorkOutline, TrendingUp, Security, Code, Verified, Business, Group, Lightbulb } from '@mui/icons-material';
 import { ComponentProps, JobMatch, Application } from '../types';
 
 const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
@@ -31,35 +31,53 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
         {
           id: 1,
           title: "Senior DeFi Protocol Developer",
-          company: "Anonymous Employer #1",
+          company: "Stealth DeFi Startup",
+          industry: "DeFi Protocol",
+          companySize: "50-100 employees",
+          fundingStage: "Series A",
+          techStack: ["Solidity", "Ethereum", "Hardhat"],
+          culture: ["Remote-first", "Fast-paced", "Equity-heavy"],
           matchScore: 95,
           salaryRange: "$120,000 - $150,000",
           requirements: "Advanced Solidity, DeFi Experience",
           posted: "2 days ago",
           type: "Full-time",
-          location: "Remote"
+          location: "Remote",
+          verified: true
         },
         {
           id: 2,
           title: "Smart Contract Security Auditor", 
-          company: "Anonymous Employer #2",
+          company: "Top-tier Security Firm",
+          industry: "Security & Auditing",
+          companySize: "10-50 employees",
+          fundingStage: "Profitable",
+          techStack: ["Solidity", "Foundry", "Static Analysis"],
+          culture: ["Quality-focused", "Learning-oriented", "Flexible hours"],
           matchScore: 88,
           salaryRange: "$100,000 - $130,000",
           requirements: "Security Knowledge, Testing",
           posted: "1 week ago",
           type: "Contract",
-          location: "Hybrid"
+          location: "Hybrid",
+          verified: true
         },
         {
           id: 3,
           title: "Blockchain Full-Stack Developer",
-          company: "Anonymous Employer #3", 
+          company: "Web3 Gaming Studio",
+          industry: "Gaming & NFTs",
+          companySize: "20-50 employees", 
+          fundingStage: "Seed",
+          techStack: ["Solidity", "React", "Unity"],
+          culture: ["Creative", "Gaming-focused", "Collaborative"],
           matchScore: 82,
           salaryRange: "$90,000 - $120,000",
           requirements: "Solidity, React, Web3.js",
           posted: "3 days ago",
           type: "Full-time",
-          location: "Remote"
+          location: "Remote",
+          verified: false
         }
       ];
       
@@ -176,12 +194,49 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
                         />
                       </Box>
                       
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        {job.company}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          {job.company}
+                        </Typography>
+                        {job.verified && (
+                          <Tooltip title="Verified Employer">
+                            <Verified sx={{ fontSize: 16, color: 'primary.main' }} />
+                          </Tooltip>
+                        )}
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                        <Chip 
+                          icon={<Business />} 
+                          label={job.industry} 
+                          size="small" 
+                          variant="outlined" 
+                          color="primary"
+                        />
+                        <Chip 
+                          icon={<Group />} 
+                          label={job.companySize} 
+                          size="small" 
+                          variant="outlined"
+                        />
+                        <Chip 
+                          label={job.fundingStage} 
+                          size="small" 
+                          variant="outlined"
+                          color="secondary"
+                        />
+                      </Box>
                       
                       <Typography variant="body2" paragraph>
                         <strong>Requirements:</strong> {job.requirements}
+                      </Typography>
+                      
+                      <Typography variant="body2" paragraph>
+                        <strong>Tech Stack:</strong> {job.techStack.join(', ')}
+                      </Typography>
+                      
+                      <Typography variant="body2" paragraph>
+                        <strong>Culture:</strong> {job.culture.join(' • ')}
                       </Typography>
                       
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -293,11 +348,41 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
                 Your identity remains anonymous until both parties agree to proceed.
               </Alert>
               
-              <Typography variant="body2">
-                <strong>Match Score:</strong> {selectedJob.matchScore}%<br/>
-                <strong>Salary Range:</strong> {selectedJob.salaryRange}<br/>
-                <strong>Requirements:</strong> {selectedJob.requirements}
-              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Industry:</strong> {selectedJob.industry}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Company Size:</strong> {selectedJob.companySize}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Stage:</strong> {selectedJob.fundingStage}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Match Score:</strong> {selectedJob.matchScore}%
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Salary:</strong> {selectedJob.salaryRange}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Location:</strong> {selectedJob.location}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Tech Stack:</strong> {selectedJob.techStack.join(', ')}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Culture:</strong> {selectedJob.culture.join(' • ')}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Requirements:</strong> {selectedJob.requirements}
+                  </Typography>
+                </Grid>
+              </Grid>
             </Box>
           )}
         </DialogContent>
