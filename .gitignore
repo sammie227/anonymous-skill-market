@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.local
+.env.production
+coverage/
+cache/
+artifacts/
+build/
+dist/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.tgz
+*.tar.gz

@@ -1,0 +1,28 @@
+{
+  "name": "anonymous-skill-market",
+  "version": "1.0.0",
+  "description": "Anonymous skill certification marketplace using FHEVM",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy": "hardhat run scripts/deploy.js"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.26.3"
+  },
+  "dependencies": {
+    "fhevm": "^0.3.0"
+  },
+  "keywords": [
+    "fhe",
+    "blockchain",
+    "privacy",
+    "skills",
+    "marketplace"
+  ],
+  "author": "",
+  "license": "MIT"
+}
