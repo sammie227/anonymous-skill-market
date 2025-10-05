@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import {
   Card, CardContent, Typography, Button, Box,
   TextareaAutosize, Alert, CircularProgress,
-  Chip, Grid, Paper
+  Chip, Grid, Paper, LinearProgress, Accordion,
+  AccordionSummary, AccordionDetails, List, ListItem,
+  ListItemIcon, ListItemText
 } from '@mui/material';
+import { 
+  ExpandMore, CheckCircle, Warning, Error, 
+  Code, Security, Speed, Assignment 
+} from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { ComponentProps } from '../types';
 
@@ -24,11 +30,24 @@ const CodeTextarea = styled(TextareaAutosize)(({ theme }) => ({
   },
 }));
 
+interface AnalysisResult {
+  overall: number;
+  complexity: number;
+  security: number;
+  quality: number;
+  details: {
+    strengths: string[];
+    improvements: string[];
+    vulnerabilities: string[];
+  };
+}
+
 const CodeSubmission: React.FC<ComponentProps> = ({ account, signer }) => {
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
 
   const sampleCode = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
@@ -66,20 +85,45 @@ contract SimpleStorage {
 
     setIsSubmitting(true);
     setError('');
+    setAnalysisResult(null);
     
     try {
       // Simulate code analysis
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // In real implementation:
-      // 1. Hash the code
-      // 2. Submit to SkillEvaluator contract
-      // 3. Trigger AI analysis service
+      // Generate mock analysis results
+      const mockResult: AnalysisResult = {
+        overall: 85,
+        complexity: 78,
+        security: 92,
+        quality: 85,
+        details: {
+          strengths: [
+            "Proper use of events for transparency",
+            "Access control with custom modifiers",
+            "Clear function naming and structure",
+            "Follows Solidity best practices"
+          ],
+          improvements: [
+            "Add more comprehensive error messages",
+            "Consider using OpenZeppelin's SafeMath (though not needed in 0.8+)",
+            "Add more detailed documentation comments",
+            "Implement more granular access control"
+          ],
+          vulnerabilities: [
+            "No major security vulnerabilities found",
+            "Code follows checks-effects-interactions pattern",
+            "Proper use of require statements for validation"
+          ]
+        }
+      };
       
-      console.log('Code submitted for analysis');
+      setAnalysisResult(mockResult);
       setSubmitSuccess(true);
-      setCode('');
       
+      console.log('Code analysis complete:', mockResult);
+      
+      // Clear success message after 5 seconds
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
       setError('Failed to submit code: ' + (error as Error).message);
@@ -212,6 +256,156 @@ contract SimpleStorage {
             </CardContent>
           </Card>
         </Grid>
+        
+        {/* Analysis Results */}
+        {analysisResult && (
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Assignment color="primary" />
+                  Analysis Results
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  {/* Overall Score */}
+                  <Grid item xs={12} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2 }}>
+                      <Typography variant="h2" color="primary">
+                        {analysisResult.overall}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Overall Score
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  {/* Individual Scores */}
+                  <Grid item xs={12} md={9}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={4}>
+                        <Box sx={{ mb: 2 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2">Complexity</Typography>
+                            <Typography variant="body2">{analysisResult.complexity}/100</Typography>
+                          </Box>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={analysisResult.complexity}
+                            sx={{ height: 8, borderRadius: 4 }}
+                          />
+                        </Box>
+                      </Grid>
+                      
+                      <Grid item xs={12} sm={4}>
+                        <Box sx={{ mb: 2 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2">Security</Typography>
+                            <Typography variant="body2">{analysisResult.security}/100</Typography>
+                          </Box>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={analysisResult.security}
+                            color="success"
+                            sx={{ height: 8, borderRadius: 4 }}
+                          />
+                        </Box>
+                      </Grid>
+                      
+                      <Grid item xs={12} sm={4}>
+                        <Box sx={{ mb: 2 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2">Quality</Typography>
+                            <Typography variant="body2">{analysisResult.quality}/100</Typography>
+                          </Box>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={analysisResult.quality}
+                            color="secondary"
+                            sx={{ height: 8, borderRadius: 4 }}
+                          />
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                
+                {/* Detailed Analysis */}
+                <Box sx={{ mt: 3 }}>
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CheckCircle color="success" />
+                        Strengths ({analysisResult.details.strengths.length})
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List>
+                        {analysisResult.details.strengths.map((strength, index) => (
+                          <ListItem key={index}>
+                            <ListItemIcon>
+                              <CheckCircle color="success" sx={{ fontSize: 16 }} />
+                            </ListItemIcon>
+                            <ListItemText primary={strength} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                  
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Warning color="warning" />
+                        Improvement Suggestions ({analysisResult.details.improvements.length})
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List>
+                        {analysisResult.details.improvements.map((improvement, index) => (
+                          <ListItem key={index}>
+                            <ListItemIcon>
+                              <Warning color="warning" sx={{ fontSize: 16 }} />
+                            </ListItemIcon>
+                            <ListItemText primary={improvement} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                  
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Security color="primary" />
+                        Security Analysis ({analysisResult.details.vulnerabilities.length})
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List>
+                        {analysisResult.details.vulnerabilities.map((vuln, index) => (
+                          <ListItem key={index}>
+                            <ListItemIcon>
+                              <Security color="primary" sx={{ fontSize: 16 }} />
+                            </ListItemIcon>
+                            <ListItemText primary={vuln} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                </Box>
+                
+                <Alert severity="success" sx={{ mt: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Your encrypted score ({analysisResult.overall}/100) has been stored on-chain!</strong><br/>
+                    This score will be used for anonymous job matching. Employers can see if you meet their requirements without knowing your exact score or identity.
+                  </Typography>
+                </Alert>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );
