@@ -4,7 +4,7 @@ import {
   CssBaseline, AppBar, Toolbar, Typography, Container, Tab, Tabs, Box, 
   Button, Chip, IconButton, Avatar, Menu, MenuItem, Alert, Card
 } from '@mui/material';
-import { AccountCircle, Logout, Wallet, Code, Work, Search, Dashboard } from '@mui/icons-material';
+import { AccountCircle, Logout, Wallet, Code, Work, Search, Dashboard, SwapHoriz } from '@mui/icons-material';
 import { ethers } from 'ethers';
 
 import DeveloperDashboard from './components/DeveloperDashboard';
@@ -118,6 +118,17 @@ function App() {
       setProvider(provider);
       setSigner(signer);
       setAccount(accounts[0]);
+      
+      // Load saved role for this wallet address
+      const savedRole = localStorage.getItem(`userRole_${accounts[0]}`);
+      if (savedRole && (savedRole === 'developer' || savedRole === 'employer')) {
+        setUserRole(savedRole as UserRole);
+        if (savedRole === 'developer') {
+          setTabValue(0);
+        } else if (savedRole === 'employer') {
+          setTabValue(1);
+        }
+      }
     } catch (error) {
       console.error("Failed to connect to wallet:", error);
       alert("Failed to connect wallet. Please try again.");
@@ -137,6 +148,12 @@ function App() {
 
   const selectRole = (role: UserRole) => {
     setUserRole(role);
+    
+    // Save role to localStorage for this wallet address
+    if (account && role) {
+      localStorage.setItem(`userRole_${account}`, role);
+    }
+    
     if (role === 'developer') {
       setTabValue(0); // Developer Dashboard
     } else if (role === 'employer') {
@@ -177,6 +194,14 @@ function App() {
           
           {isConnected ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              {userRole && (
+                <Chip 
+                  icon={userRole === 'developer' ? <Code /> : <Work />}
+                  label={userRole === 'developer' ? 'Developer' : 'Employer'}
+                  color="secondary"
+                  size="small"
+                />
+              )}
               <Chip 
                 icon={<AccountCircle />}
                 label={`${account.substring(0, 6)}...${account.substring(38)}`}
@@ -193,6 +218,14 @@ function App() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
               >
+                <MenuItem onClick={() => {
+                  const newRole = userRole === 'developer' ? 'employer' : 'developer';
+                  selectRole(newRole);
+                  handleMenuClose();
+                }}>
+                  <SwapHoriz sx={{ mr: 2 }} /> 
+                  Switch to {userRole === 'developer' ? 'Employer' : 'Developer'}
+                </MenuItem>
                 <MenuItem onClick={disconnectWallet}>
                   <Logout sx={{ mr: 2 }} /> Disconnect
                 </MenuItem>
@@ -251,11 +284,14 @@ function App() {
       {isConnected && !userRole && (
         <Container maxWidth="md" sx={{ mt: 8, textAlign: 'center' }}>
           <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
-            Choose Your Role
+            Welcome to Anonymous Skill Market
           </Typography>
-          <Typography variant="h6" color="text.secondary" paragraph sx={{ mb: 6 }}>
-            Are you looking to showcase your skills or hire talented developers?
+          <Typography variant="h6" color="text.secondary" paragraph sx={{ mb: 2 }}>
+            Choose your role to get started. You can switch between roles anytime in the menu.
           </Typography>
+          <Alert severity="info" sx={{ mb: 4, textAlign: 'left' }}>
+            Your role preference will be saved for this wallet address. You can easily switch roles later using the menu in the top-right corner.
+          </Alert>
           
           <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Card 
