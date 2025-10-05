@@ -119,13 +119,13 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
     }
   };
 
-  const getMatchColor = (score) => {
+  const getMatchColor = (score: number) => {
     if (score >= 90) return 'success';
     if (score >= 80) return 'warning';
     return 'default';
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Applied': return 'primary';
       case 'Under Review': return 'warning';
