@@ -5,13 +5,14 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { WorkOutline, TrendingUp, Security, Code } from '@mui/icons-material';
+import { ComponentProps, JobMatch, Application } from '../types';
 
-const JobMatching = ({ account, signer }) => {
-  const [matches, setMatches] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [applications, setApplications] = useState([]);
-  const [applyDialog, setApplyDialog] = useState(false);
-  const [selectedJob, setSelectedJob] = useState(null);
+const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
+  const [matches, setMatches] = useState<JobMatch[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [applyDialog, setApplyDialog] = useState<boolean>(false);
+  const [selectedJob, setSelectedJob] = useState<JobMatch | null>(null);
 
   useEffect(() => {
     if (account && signer) {

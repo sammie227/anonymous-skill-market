@@ -5,6 +5,7 @@ import {
   Chip, Grid, Paper
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { ComponentProps } from '../types';
 
 const CodeTextarea = styled(TextareaAutosize)(({ theme }) => ({
   width: '100%',
@@ -23,7 +24,7 @@ const CodeTextarea = styled(TextareaAutosize)(({ theme }) => ({
   },
 }));
 
-const CodeSubmission = ({ account, signer }) => {
+const CodeSubmission: React.FC<ComponentProps> = ({ account, signer }) => {
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
