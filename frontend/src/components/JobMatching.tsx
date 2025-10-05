@@ -72,18 +72,18 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
   };
 
   const loadApplications = async () => {
-    const mockApplications = [
+    const mockApplications: Application[] = [
       {
         id: 1,
         jobTitle: "Senior DeFi Protocol Developer",
-        status: "Applied",
+        status: "Applied" as const,
         appliedDate: "2024-01-20",
         matchScore: 95
       },
       {
         id: 2,
         jobTitle: "Smart Contract Security Auditor",
-        status: "Under Review", 
+        status: "Under Review" as const, 
         appliedDate: "2024-01-18",
         matchScore: 88
       }
@@ -91,7 +91,7 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
     setApplications(mockApplications);
   };
 
-  const handleApply = async (job) => {
+  const handleApply = async (job: JobMatch) => {
     setSelectedJob(job);
     setApplyDialog(true);
   };
@@ -101,10 +101,10 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
       console.log("Applying to job:", selectedJob.id);
       
       // Add to applications
-      const newApplication = {
+      const newApplication: Application = {
         id: applications.length + 1,
         jobTitle: selectedJob.title,
-        status: "Applied",
+        status: "Applied" as const,
         appliedDate: new Date().toISOString().split('T')[0],
         matchScore: selectedJob.matchScore
       };
