@@ -97,6 +97,8 @@ const JobMatching: React.FC<ComponentProps> = ({ account, signer }) => {
   };
 
   const confirmApplication = async () => {
+    if (!selectedJob) return;
+    
     try {
       console.log("Applying to job:", selectedJob.id);
       
