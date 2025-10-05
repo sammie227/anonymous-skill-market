@@ -1,0 +1,5 @@
+*.sol linguist-language=Solidity
+*.sol linguist-detectable=true
+*.js linguist-detectable=false
+*.tsx linguist-detectable=true
+*.ts linguist-detectable=true
