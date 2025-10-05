@@ -82,7 +82,7 @@ contract SimpleStorage {
       
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
-      setError('Failed to submit code: ' + error.message);
+      setError('Failed to submit code: ' + (error as Error).message);
     } finally {
       setIsSubmitting(false);
     }
