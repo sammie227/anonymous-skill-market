@@ -5,15 +5,24 @@ import {
   DialogActions, Slider
 } from '@mui/material';
 import { ethers } from 'ethers';
+import { ComponentProps } from '../types';
 
 const SKILL_MARKET_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Replace with deployed address
 
-const DeveloperDashboard = ({ account, signer }) => {
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [skillScore, setSkillScore] = useState(0);
-  const [expectedSalary, setExpectedSalary] = useState(50000);
-  const [registerDialog, setRegisterDialog] = useState(false);
-  const [submissions, setSubmissions] = useState([]);
+interface Submission {
+  id: number;
+  codeHash: string;
+  score: number;
+  timestamp: string;
+  status: string;
+}
+
+const DeveloperDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
+  const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const [skillScore, setSkillScore] = useState<number>(0);
+  const [expectedSalary, setExpectedSalary] = useState<number>(50000);
+  const [registerDialog, setRegisterDialog] = useState<boolean>(false);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
 
   useEffect(() => {
     if (account && signer) {

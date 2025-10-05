@@ -4,12 +4,37 @@ import {
   Chip, Grid, Paper, Dialog, DialogTitle, DialogContent,
   DialogActions, Slider, List, ListItem, ListItemText
 } from '@mui/material';
+import { ComponentProps } from '../types';
 
-const EmployerDashboard = ({ account, signer }) => {
-  const [jobs, setJobs] = useState([]);
-  const [matches, setMatches] = useState([]);
-  const [jobDialog, setJobDialog] = useState(false);
-  const [newJob, setNewJob] = useState({
+interface JobData {
+  id: number;
+  description: string;
+  requiredScore: number;
+  offeredSalary: number;
+  status: string;
+  applicants: number;
+}
+
+interface MatchData {
+  id: number;
+  jobId: number;
+  jobTitle: string;
+  developerScore: string;
+  status: string;
+  matchDate: string;
+}
+
+interface NewJob {
+  description: string;
+  requiredScore: number;
+  offeredSalary: number;
+}
+
+const EmployerDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
+  const [jobs, setJobs] = useState<JobData[]>([]);
+  const [matches, setMatches] = useState<MatchData[]>([]);
+  const [jobDialog, setJobDialog] = useState<boolean>(false);
+  const [newJob, setNewJob] = useState<NewJob>({
     description: '',
     requiredScore: 70,
     offeredSalary: 80000

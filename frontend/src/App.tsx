@@ -24,7 +24,13 @@ const theme = createTheme({
   },
 });
 
-function TabPanel({ children, value, index, ...other }) {
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel({ children, value, index, ...other }: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -39,10 +45,10 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 function App() {
-  const [account, setAccount] = useState('');
-  const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
-  const [tabValue, setTabValue] = useState(0);
+  const [account, setAccount] = useState<string>('');
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
+  const [tabValue, setTabValue] = useState<number>(0);
 
   useEffect(() => {
     initializeWeb3();
@@ -66,7 +72,7 @@ function App() {
     }
   };
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
