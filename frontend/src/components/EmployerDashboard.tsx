@@ -114,7 +114,7 @@ const EmployerDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
     }
   };
 
-  const handleConfirmMatch = async (matchId) => {
+  const handleConfirmMatch = async (matchId: number) => {
     try {
       console.log("Confirming match:", matchId);
       setMatches(matches.map(match => 
