@@ -107,7 +107,7 @@ const DeveloperDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
               <Typography gutterBottom>Current Skill Score: {skillScore}</Typography>
               <Slider
                 value={skillScore}
-                onChange={(e, value) => setSkillScore(value)}
+                onChange={(e, value) => setSkillScore(Array.isArray(value) ? value[0] : value)}
                 min={0}
                 max={100}
                 valueLabelDisplay="auto"

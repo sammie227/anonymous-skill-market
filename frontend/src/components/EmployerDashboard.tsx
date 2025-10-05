@@ -292,7 +292,7 @@ const EmployerDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
             <Typography gutterBottom>Required Skill Score: {newJob.requiredScore}</Typography>
             <Slider
               value={newJob.requiredScore}
-              onChange={(e, value) => setNewJob({...newJob, requiredScore: value})}
+              onChange={(e, value) => setNewJob({...newJob, requiredScore: Array.isArray(value) ? value[0] : value})}
               min={0}
               max={100}
               valueLabelDisplay="auto"
