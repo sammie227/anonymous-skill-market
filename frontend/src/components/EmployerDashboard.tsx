@@ -304,7 +304,7 @@ const EmployerDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
               label="Offered Salary (USD)"
               type="number"
               value={newJob.offeredSalary}
-              onChange={(e) => setNewJob({...newJob, offeredSalary: parseInt(e.target.value)})}
+              onChange={(e) => setNewJob({...newJob, offeredSalary: parseInt(e.target.value) || 0})}
               sx={{ mb: 2 }}
             />
             

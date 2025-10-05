@@ -119,7 +119,7 @@ const DeveloperDashboard: React.FC<ComponentProps> = ({ account, signer }) => {
                 label="Expected Annual Salary (USD)"
                 type="number"
                 value={expectedSalary}
-                onChange={(e) => setExpectedSalary(e.target.value)}
+                onChange={(e) => setExpectedSalary(parseInt(e.target.value) || 0)}
                 sx={{ mb: 2 }}
               />
               
