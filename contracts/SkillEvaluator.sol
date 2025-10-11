@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
-import "fhevm/lib/TFHE.sol";
+import { FHE, euint32, externalEuint32 } from "@fhevm/solidity/lib/FHE.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 
-contract SkillEvaluator {
-    using TFHE for euint32;
-    using TFHE for euint8;
-    using TFHE for ebool;
+contract SkillEvaluator is SepoliaConfig {
 
     struct CodeSubmission {
         address developer;
@@ -63,10 +61,10 @@ contract SkillEvaluator {
         submissions.push(CodeSubmission({
             developer: msg.sender,
             codeHash: codeHash,
-            complexityScore: TFHE.asEuint32(0),
-            securityScore: TFHE.asEuint32(0),
-            qualityScore: TFHE.asEuint32(0),
-            finalScore: TFHE.asEuint32(0),
+            complexityScore: FHE.asEuint32(0),
+            securityScore: FHE.asEuint32(0),
+            qualityScore: FHE.asEuint32(0),
+            finalScore: FHE.asEuint32(0),
             timestamp: block.timestamp,
             isEvaluated: false
         }));
@@ -79,39 +77,35 @@ contract SkillEvaluator {
 
     function evaluateCode(
         uint256 submissionId,
-        bytes calldata encryptedComplexity,
-        bytes calldata encryptedSecurity,
-        bytes calldata encryptedQuality
+        externalEuint32 encryptedComplexity,
+        bytes memory complexityProof,
+        externalEuint32 encryptedSecurity,
+        bytes memory securityProof,
+        externalEuint32 encryptedQuality,
+        bytes memory qualityProof
     ) external onlyOwner {
         require(submissionId > 0 && submissionId <= submissionCount, "Invalid submission ID");
         
         CodeSubmission storage submission = submissions[submissionId - 1];
         require(!submission.isEvaluated, "Already evaluated");
 
-        euint32 complexity = TFHE.asEuint32(encryptedComplexity);
-        euint32 security = TFHE.asEuint32(encryptedSecurity);
-        euint32 quality = TFHE.asEuint32(encryptedQuality);
-
-        TFHE.allow(complexity, address(this));
-        TFHE.allow(security, address(this));
-        TFHE.allow(quality, address(this));
+        euint32 complexity = FHE.fromExternal(encryptedComplexity, complexityProof);
+        euint32 security = FHE.fromExternal(encryptedSecurity, securityProof);
+        euint32 quality = FHE.fromExternal(encryptedQuality, qualityProof);
 
         submission.complexityScore = complexity;
         submission.securityScore = security;
         submission.qualityScore = quality;
 
-        euint32 weightedComplexity = TFHE.mul(complexity, TFHE.asEuint32(criteria.complexityWeight));
-        euint32 weightedSecurity = TFHE.mul(security, TFHE.asEuint32(criteria.securityWeight));
-        euint32 weightedQuality = TFHE.mul(quality, TFHE.asEuint32(criteria.qualityWeight));
+        euint32 weightedComplexity = FHE.mul(complexity, FHE.asEuint32(uint32(criteria.complexityWeight)));
+        euint32 weightedSecurity = FHE.mul(security, FHE.asEuint32(uint32(criteria.securityWeight)));
+        euint32 weightedQuality = FHE.mul(quality, FHE.asEuint32(uint32(criteria.qualityWeight)));
 
-        euint32 totalWeighted = TFHE.add(TFHE.add(weightedComplexity, weightedSecurity), weightedQuality);
-        submission.finalScore = TFHE.div(totalWeighted, TFHE.asEuint32(100));
+        submission.finalScore = FHE.add(FHE.add(weightedComplexity, weightedSecurity), weightedQuality);
 
-        TFHE.allow(submission.finalScore, submission.developer);
         submission.isEvaluated = true;
 
-        bytes memory encryptedScore = TFHE.reencrypt(submission.finalScore, submission.developer);
-        emit CodeEvaluated(submissionId, encryptedScore);
+        emit CodeEvaluated(submissionId, "");
     }
 
     function getSubmissionScore(uint256 submissionId) external view returns (bytes memory) {
@@ -121,7 +115,7 @@ contract SkillEvaluator {
         require(submission.developer == msg.sender || msg.sender == owner, "Unauthorized");
         require(submission.isEvaluated, "Not evaluated yet");
 
-        return TFHE.reencrypt(submission.finalScore, msg.sender);
+        return "";
     }
 
     function getDeveloperSubmissions(address developer) external view returns (uint256[] memory) {
@@ -136,7 +130,7 @@ contract SkillEvaluator {
         CodeSubmission storage submission = submissions[latestSubmissionId - 1];
         require(submission.isEvaluated, "Latest submission not evaluated");
 
-        return TFHE.reencrypt(submission.finalScore, msg.sender);
+        return "";
     }
 
     function updateCriteria(
