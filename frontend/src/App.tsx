@@ -146,6 +146,45 @@ function App() {
     setAnchorEl(null);
   };
 
+  // Listen for account changes
+  React.useEffect(() => {
+    if (window.ethereum) {
+      const handleAccountsChanged = async (accounts: string[]) => {
+        if (accounts.length === 0) {
+          // User disconnected their wallet
+          disconnectWallet();
+        } else if (accounts[0] !== account) {
+          // User switched accounts
+          const newAccount = accounts[0];
+          setAccount(newAccount);
+          
+          // Load saved role for the new account
+          const savedRole = localStorage.getItem(`userRole_${newAccount}`);
+          if (savedRole && (savedRole === 'developer' || savedRole === 'employer')) {
+            setUserRole(savedRole as UserRole);
+          } else {
+            setUserRole(null);
+            setTabValue(0);
+          }
+          
+          // Update provider and signer
+          if (provider) {
+            const newSigner = await provider.getSigner();
+            setSigner(newSigner);
+          }
+        }
+      };
+
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+      return () => {
+        if (window.ethereum && window.ethereum.removeListener) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        }
+      };
+    }
+  }, [account, provider]);
+
   const selectRole = (role: UserRole) => {
     setUserRole(role);
     
