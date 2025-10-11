@@ -182,8 +182,8 @@ function App() {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
 
       return () => {
-        if (window.ethereum && window.ethereum.off) {
-          window.ethereum.off('accountsChanged', handleAccountsChanged);
+        if (window.ethereum && window.ethereum.removeListener) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
         }
       };
     }
