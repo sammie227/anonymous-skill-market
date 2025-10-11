@@ -150,16 +150,20 @@ function App() {
   React.useEffect(() => {
     if (window.ethereum) {
       const handleAccountsChanged = async (accounts: string[]) => {
+        console.log('Account changed detected:', accounts);
         if (accounts.length === 0) {
           // User disconnected their wallet
+          console.log('Wallet disconnected');
           disconnectWallet();
         } else if (accounts[0] !== account) {
           // User switched accounts
           const newAccount = accounts[0];
+          console.log('Switching from', account, 'to', newAccount);
           setAccount(newAccount);
           
           // Load saved role for the new account
           const savedRole = localStorage.getItem(`userRole_${newAccount}`);
+          console.log('Loaded role for new account:', savedRole);
           if (savedRole && (savedRole === 'developer' || savedRole === 'employer')) {
             setUserRole(savedRole as UserRole);
           } else {
@@ -178,8 +182,8 @@ function App() {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
 
       return () => {
-        if (window.ethereum && window.ethereum.removeListener) {
-          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        if (window.ethereum && window.ethereum.off) {
+          window.ethereum.off('accountsChanged', handleAccountsChanged);
         }
       };
     }
